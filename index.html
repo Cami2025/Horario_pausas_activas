@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -39,13 +40,19 @@
     }
 
     .logo{
-      font-size:33px;
-      font-weight:800;
-      color:var(--azul2);
-      white-space:nowrap;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      min-width:240px;
     }
 
-    .logo span{color:#f28c00;font-weight:500}
+    .logo img{
+      display:block;
+      width:220px;
+      max-width:100%;
+      height:auto;
+      object-fit:contain;
+    }
 
     .titulo h1{
       margin:0;
@@ -219,7 +226,13 @@
       .estado{justify-self:center}
       .barra-superior{align-items:flex-start}
       .selector-semana{grid-template-columns:1fr}
-      .logo{font-size:28px}
+      .logo{
+        justify-content:center;
+        min-width:0;
+      }
+      .logo img{
+        width:180px;
+      }
     }
 
     @media print{
@@ -234,7 +247,7 @@
 <body>
   <main class="pagina">
     <header>
-      <div class="logo">Vive<span>Bienestar</span></div>
+      <div class="logo"><img src="imagenes/logo_vivebienestar.webp" alt="Vive Bienestar"></div>
       <div class="titulo">
         <h1>PROGRAMA DE PAUSAS ACTIVAS</h1>
         <p>Organización de Pausas Activas por Día y Edificio</p>
