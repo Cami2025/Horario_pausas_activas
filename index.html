@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -209,6 +211,88 @@
       font-weight:500;
     }
 
+
+    .reservas{
+      margin-top:24px;
+      background:white;
+      border:1px solid var(--borde);
+      border-radius:18px;
+      box-shadow:var(--sombra);
+      overflow:hidden;
+    }
+
+    .reservas-encabezado{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:20px 22px;
+      border-bottom:1px solid var(--borde);
+      flex-wrap:wrap;
+    }
+
+    .reservas-encabezado h2{
+      margin:0;
+      color:var(--azul);
+      font-size:23px;
+    }
+
+    .reservas-encabezado p{
+      margin:6px 0 0;
+      color:#607197;
+      font-size:14px;
+    }
+
+    .etiqueta-reserva{
+      background:#eef5ff;
+      border:1px solid #cfe0f8;
+      color:#2450a4;
+      border-radius:999px;
+      padding:9px 14px;
+      font-size:13px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .reservas-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      padding:20px;
+    }
+
+    .reserva-card{
+      border:1px solid #dce6f4;
+      border-radius:14px;
+      padding:16px;
+      background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+      min-height:104px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:7px;
+    }
+
+    .reserva-card strong{
+      color:var(--azul);
+      font-size:16px;
+      line-height:1.25;
+    }
+
+    .reserva-card span{
+      color:#607197;
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .reserva-card small{
+      color:var(--verde);
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+
     footer{
       text-align:center;
       margin-top:18px;
@@ -224,6 +308,7 @@
       .estado{justify-self:center}
       .barra-superior{align-items:flex-start}
       .selector-semana{grid-template-columns:1fr}
+      .reservas-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
       .logo{
         justify-content:center;
         min-width:0;
@@ -231,6 +316,10 @@
       .logo img{
         width:180px;
       }
+    }
+
+    @media(max-width:560px){
+      .reservas-grid{grid-template-columns:1fr}
     }
 
     @media print{
@@ -291,6 +380,17 @@
           <tbody id="cuerpoTabla"></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="reservas">
+      <div class="reservas-encabezado">
+        <div>
+          <h2 id="tituloReservas">Grupos de reserva · Semana B</h2>
+          <p id="textoReservas">Estos grupos pertenecen a la semana contraria y pueden utilizarse como reemplazo.</p>
+        </div>
+        <div class="etiqueta-reserva">8 grupos disponibles</div>
+      </div>
+      <div class="reservas-grid" id="reservasGrid"></div>
     </section>
 
     <footer>Programa de Pausas Activas · Vive Bienestar</footer>
@@ -391,6 +491,30 @@
       }
     };
 
+
+    const gruposReserva = {
+      A: [
+        { nombre:"Servicio al Cliente", detalle:"Grupo de la Semana B" },
+        { nombre:"Vacunatorio", detalle:"Grupo de la Semana B" },
+        { nombre:"Cuentas Médicas", detalle:"Grupo de la Semana B" },
+        { nombre:"Cobranza Judicial", detalle:"Grupo de la Semana B" },
+        { nombre:"Abastecimiento", detalle:"Grupo de la Semana B" },
+        { nombre:"Biblioteca", detalle:"Grupo de la Semana B" },
+        { nombre:"Laboratorio Respiratorio", detalle:"Grupo de la Semana B" },
+        { nombre:"UPC Pediátrica", detalle:"Grupo de la Semana B" }
+      ],
+      B: [
+        { nombre:"Unidad de Registros Clínicos", detalle:"Grupo de la Semana A" },
+        { nombre:"Logística", detalle:"Grupo de la Semana A" },
+        { nombre:"Facturación", detalle:"Grupo de la Semana A" },
+        { nombre:"GES CAEC", detalle:"Grupo de la Semana A" },
+        { nombre:"Control Financiero", detalle:"Grupo de la Semana A" },
+        { nombre:"Bodega Central", detalle:"Grupo de la Semana A" },
+        { nombre:"Central de Cajas", detalle:"Grupo de la Semana A" },
+        { nombre:"Pabellón Maternidad", detalle:"Grupo de la Semana A" }
+      ]
+    };
+
     let semanaActual = "B";
     let diaActual = "Lunes";
 
@@ -400,6 +524,9 @@
     const tituloTabla = document.getElementById("tituloTabla");
     const estadoSemana = document.getElementById("estadoSemana");
     const estadoFecha = document.getElementById("estadoFecha");
+    const tituloReservas = document.getElementById("tituloReservas");
+    const textoReservas = document.getElementById("textoReservas");
+    const reservasGrid = document.getElementById("reservasGrid");
 
     function renderDias(){
       const dias = Object.keys(horarios[semanaActual].dias);
@@ -416,6 +543,33 @@
           renderTabla();
         });
         diasContenedor.appendChild(btn);
+      });
+    }
+
+
+    function renderReservas(){
+      reservasGrid.innerHTML = "";
+      tituloReservas.textContent = `Grupos de reserva · Semana ${semanaActual}`;
+      textoReservas.textContent =
+        `Estos grupos pertenecen a la Semana ${semanaActual === "A" ? "B" : "A"} y pueden utilizarse como reemplazo durante la Semana ${semanaActual}.`;
+
+      gruposReserva[semanaActual].forEach(grupo => {
+        const card = document.createElement("article");
+        card.className = "reserva-card";
+
+        const estado = document.createElement("small");
+        estado.textContent = "Disponible como reemplazo";
+
+        const nombre = document.createElement("strong");
+        nombre.textContent = grupo.nombre;
+
+        const detalle = document.createElement("span");
+        detalle.textContent = grupo.detalle;
+
+        card.appendChild(estado);
+        card.appendChild(nombre);
+        card.appendChild(detalle);
+        reservasGrid.appendChild(card);
       });
     }
 
@@ -445,11 +599,13 @@
         diaActual = Object.keys(horarios[semanaActual].dias)[0];
         renderDias();
         renderTabla();
+        renderReservas();
       });
     });
 
     renderDias();
     renderTabla();
+    renderReservas();
   </script>
 </body>
 </html>
